@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'user',
 ]
+
+CORS_ORIGIN_ALLOW_ALL  = True
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -111,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'
 
 USE_I18N = True
 
