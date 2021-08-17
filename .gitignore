@@ -3,6 +3,9 @@
 *.swp
 *.swo
 
+# notes
+notes.txt
+
 # Django #
 *.log
 *.pot

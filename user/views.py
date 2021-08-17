@@ -31,3 +31,72 @@ def userApi(request,id=0):
         user = User.objects.get(id_user=id)
         user.delete()
         return JsonResponse("Deleted successfully", safe=False)
+@api_view(['GET','POST','DELETE','PUT'])
+def folderApi(request,id=0):
+    if request.method == 'GET':
+        folders = Folder.objects.all()
+        serializer = FolderSerializer(folders, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = FolderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        folder = Folder.objects.get(id_folder=id)
+        serializer = FolderSerializer(folder, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        folder = Folder.objects.get(id_folder=id)
+        folder.delete()
+        return JsonResponse("Deleted successfully", safe=False)
+@api_view(['GET','POST','DELETE','PUT'])
+def taskApi(request,id=0):
+    if request.method == 'GET':
+        task = Task.objects.all()
+        serializer = TaskSerializer(task, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        task = Task.objects.get(id_task=id)
+        serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        task = Task.objects.get(id_task=id)
+        task.delete()
+        return JsonResponse("Deleted successfully", safe=False)
+@api_view(['GET','POST','DELETE','PUT'])
+def subtaskApi(request,id=0):
+    if request.method == 'GET':
+        subtask = Sub_task.objects.all()
+        serializer = SubTaskSerializer(subtask, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = SubTaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        subtask = Sub_task.objects.get(id_sub_task=id)
+        serializer = SubTaskSerializer(subtask, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        subtask = Sub_task.objects.get(id_sub_task=id)
+        subtask.delete()
+        return JsonResponse("Deleted successfully", safe=False)
