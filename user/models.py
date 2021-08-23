@@ -23,7 +23,7 @@ class Folder(models.Model):
 
 class Task(models.Model):
     id_task  = models.AutoField(primary_key=True)
-    img_task = models.CharField(max_length=150)
+    img_task = models.ImageField(upload_to='uploads')
     desc_task = models.TextField()
     completed = models.BooleanField(default=False)
     user  = models.ForeignKey(User, null=False,on_delete=models.CASCADE, related_name="users")

@@ -6,6 +6,9 @@
 # notes
 notes.txt
 
+# uploads
+uploads/*
+
 # Django #
 *.log
 *.pot
