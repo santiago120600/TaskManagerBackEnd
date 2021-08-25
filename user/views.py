@@ -11,6 +11,8 @@ from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, S
 
 from rest_framework.authtoken.views import ObtainAuthToken
 
+from rest_framework.authtoken.models import Token
+
 @api_view(['GET','POST','DELETE','PUT'])
 def userApi(request,id=0):
     if request.method == 'GET':
@@ -23,9 +25,15 @@ def userApi(request,id=0):
         return Response(serializer.data)
     elif request.method == 'POST':
         serializer = UserSerializer(data=request.data)
+        data = {}
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            account = serializer.save()
+            data['response'] = 'Usuario creado'
+            data['email'] = account.email
+            data['username'] = account.username
+            token = Token.objects.get(user=account).key
+            data['token'] = token
+            return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PUT':
         user = User.objects.get(id=id)
@@ -123,6 +131,7 @@ def subtaskApi(request,id=0):
 class Login(ObtainAuthToken):
     def post(self, request, *args,**kwargs):
         login_serializer = self.serializer_class(data= request.data, context = {'request':request})
+        print(login_serializer)
         if login_serializer.is_valid():
             print("paso validacion")
         return Response({'mensaje':'Hola desde response'},status=status.HTTP_200_OK)    

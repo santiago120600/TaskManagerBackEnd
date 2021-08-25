@@ -2,7 +2,6 @@ from rest_framework import serializers
 from user.models import Folder, Task, Sub_task
 from django.contrib.auth.models import User  
 # from django.contrib.auth.hashers import make_password #Encriptar contraseña
-# from rest_framework.authtoken.models import Token
 
 class SubTaskSerializer(serializers.ModelSerializer):
     task_name = serializers.ReadOnlyField(source='task.desc_task')
