@@ -25,7 +25,7 @@ SECRET_KEY = '$0%03w!*580st2lz4%89pane#@r(r5wh!)h-#hy+6%m9np!y_k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost','127.0.0.1']
 
 
 # Application definition
@@ -38,9 +38,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    # 'rest_framework.authtoken',
+    'djoser',
+    'drf_yasg',
     'corsheaders',
     'user',
 ]
+
+
+# REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.TokenAuthentication'
+    # )
+# }
 
 CORS_ORIGIN_ALLOW_ALL  = True
 
@@ -83,10 +93,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'taskmanager',
-        'HOST': 'db',
+        'HOST': 'localhost',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'password',
+        'PASSWORD': '',
     }
 }
 
@@ -112,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Mexico_City'
 

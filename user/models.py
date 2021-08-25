@@ -1,15 +1,9 @@
 from django.db import models
-
-# Create your models here.
-class User(models.Model):
-    id_user = models.AutoField(primary_key=True)
-    user_email = models.CharField(max_length=80)
-    user_password = models.CharField(max_length=80)
-    name_user = models.CharField(max_length=80)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.user_email
+from django.contrib.auth.models import User  
+# from django.conf import settings
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
+# from rest_framework.authtoken.models import Token
 
 class Folder(models.Model):
     id_folder  = models.AutoField(primary_key=True)
@@ -45,4 +39,7 @@ class Sub_task(models.Model):
     def __str__(self):
         return self.desc_sub_task
 
-
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+    # if created:
+        # Token.objects.create(user=instance)

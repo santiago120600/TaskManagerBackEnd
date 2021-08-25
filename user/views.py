@@ -5,14 +5,17 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from user.models import User, Folder, Task, Sub_task
+from django.contrib.auth.models import User  
+from user.models import Folder, Task, Sub_task
 from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer
+
+from rest_framework.authtoken.views import ObtainAuthToken
 
 @api_view(['GET','POST','DELETE','PUT'])
 def userApi(request,id=0):
     if request.method == 'GET':
-        if id is not 0:
-            user = User.objects.get(id_user=id)
+        if id != 0:
+            user = User.objects.get(id=id)
             serializer = UserSerializer(user, many=False)
         else:
             users = User.objects.all()
@@ -25,20 +28,20 @@ def userApi(request,id=0):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PUT':
-        user = User.objects.get(id_user=id)
+        user = User.objects.get(id=id)
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        user = User.objects.get(id_user=id)
+        user = User.objects.get(id=id)
         user.delete()
         return JsonResponse("Deleted successfully", safe=False)
 @api_view(['GET','POST','DELETE','PUT'])
 def folderApi(request,id=0):
     if request.method == 'GET':
-        if id is not 0:
+        if id != 0:
             folder = Folder.objects.get(id_folder=id)
             serializer = FolderSerializer(folder, many=False)
         else:
@@ -65,7 +68,7 @@ def folderApi(request,id=0):
 @api_view(['GET','POST','DELETE','PUT'])
 def taskApi(request,id=0):
     if request.method == 'GET':
-        if id is not 0:
+        if id != 0:
             task = Task.objects.get(id_task=id)
             serializer = TaskSerializer(task, many=False)
         else:
@@ -92,7 +95,7 @@ def taskApi(request,id=0):
 @api_view(['GET','POST','DELETE','PUT'])
 def subtaskApi(request,id=0):
     if request.method == 'GET':
-        if id is not 0:
+        if id != 0:
             subtask = Sub_task.objects.get(id_sub_task=id)
             serializer = SubTaskSerializer(subtask, many=False)
         else:
@@ -116,3 +119,11 @@ def subtaskApi(request,id=0):
         subtask = Sub_task.objects.get(id_sub_task=id)
         subtask.delete()
         return JsonResponse("Deleted successfully", safe=False)
+
+class Login(ObtainAuthToken):
+    def post(self, request, *args,**kwargs):
+        login_serializer = self.serializer_class(data= request.data, context = {'request':request})
+        if login_serializer.is_valid():
+            print("paso validacion")
+        return Response({'mensaje':'Hola desde response'},status=status.HTTP_200_OK)    
+
