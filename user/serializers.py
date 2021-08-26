@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from user.models import Folder, Task, Sub_task
 from django.contrib.auth.models import User  
 # from django.contrib.auth.hashers import make_password #Encriptar contraseña
@@ -19,15 +20,18 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(source='users',many=True, read_only=True)
-    class Meta:
-        model = User
-        fields = '__all__'
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
+    password = serializers.CharField(min_length=8)
     
     def create(self, validated_data):
        user = User(**validated_data) 
        user.set_password(validated_data['password'])
        user.save()
        return user
+
+    class Meta:
+        model = User
+        fields = ('id','username','email','password','tasks')
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)

@@ -12,40 +12,86 @@ from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, S
 from rest_framework.authtoken.views import ObtainAuthToken
 
 from rest_framework.authtoken.models import Token
+from django.core.exceptions import ObjectDoesNotExist
 
 @api_view(['GET','POST','DELETE','PUT'])
-def userApi(request,id=0):
+def userApi(request,id=None):
+    response = {}
+    data = {}
+    if id:
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
     if request.method == 'GET':
-        if id != 0:
+        if id:
             user = User.objects.get(id=id)
             serializer = UserSerializer(user, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
         else:
             users = User.objects.all()
             serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+        return Response(response)
     elif request.method == 'POST':
         serializer = UserSerializer(data=request.data)
-        data = {}
         if serializer.is_valid():
             account = serializer.save()
-            data['response'] = 'Usuario creado'
+            response['status'] =status.HTTP_201_CREATED
+            response['message'] = 'Usuario creado'
             data['email'] = account.email
             data['username'] = account.username
-            token = Token.objects.get(user=account).key
-            data['token'] = token
-            return Response(data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            data['token'] = Token.objects.get(user=account).key
+            response['data'] = data
+            response['validations'] = []
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['data'] = []
+            response['message'] = 'Error de validaciones'
+            response['validations'] =serializer.errors 
+        return Response(response)
     elif request.method == 'PUT':
-        user = User.objects.get(id=id)
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if id:
+            user = User.objects.get(id=id)
+            serializer = UserSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'Usuario actualizado'
+                response['validations'] = []
+                response['data'] =serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error al actualizar'
+                response['validations'] = serializer.errors
+                response['data'] =[]
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+        return Response(response)
     elif request.method == 'DELETE':
-        user = User.objects.get(id=id)
-        user.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        if id:
+            user = User.objects.get(id=id)
+            user.delete()
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+        return Response(response)
 @api_view(['GET','POST','DELETE','PUT'])
 def folderApi(request,id=0):
     if request.method == 'GET':
@@ -128,11 +174,4 @@ def subtaskApi(request,id=0):
         subtask.delete()
         return JsonResponse("Deleted successfully", safe=False)
 
-class Login(ObtainAuthToken):
-    def post(self, request, *args,**kwargs):
-        login_serializer = self.serializer_class(data= request.data, context = {'request':request})
-        print(login_serializer)
-        if login_serializer.is_valid():
-            print("paso validacion")
-        return Response({'mensaje':'Hola desde response'},status=status.HTTP_200_OK)    
 
