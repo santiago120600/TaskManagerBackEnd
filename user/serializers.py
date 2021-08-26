@@ -11,7 +11,7 @@ class SubTaskSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class TaskSerializer(serializers.ModelSerializer):
-    user_name = serializers.ReadOnlyField(source='user.name_user')
+    user_name = serializers.ReadOnlyField(source='user.username')
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     class Meta:

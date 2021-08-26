@@ -39,7 +39,6 @@ def userApi(request,id=None):
             response['status'] = status.HTTP_200_OK
             response['message'] = 'OK'
             response['data'] = serializer.data
-        return Response(response)
     elif request.method == 'POST':
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -56,7 +55,6 @@ def userApi(request,id=None):
             response['data'] = []
             response['message'] = 'Error de validaciones'
             response['validations'] =serializer.errors 
-        return Response(response)
     elif request.method == 'PUT':
         if id:
             user = User.objects.get(id=id)
@@ -69,7 +67,7 @@ def userApi(request,id=None):
                 response['data'] =serializer.data
             else:
                 response['status'] =status.HTTP_400_BAD_REQUEST
-                response['message'] = 'Error al actualizar'
+                response['message'] = 'Error en validaciones'
                 response['validations'] = serializer.errors
                 response['data'] =[]
         else:
@@ -77,7 +75,6 @@ def userApi(request,id=None):
             response['message'] = 'Id no enviado'
             response['validations'] = []
             response['data'] = []
-        return Response(response)
     elif request.method == 'DELETE':
         if id:
             user = User.objects.get(id=id)
@@ -91,50 +88,117 @@ def userApi(request,id=None):
             response['message'] = 'Id no enviado'
             response['validations'] = []
             response['data'] = []
-        return Response(response)
+    return Response(response)
 @api_view(['GET','POST','DELETE','PUT'])
-def folderApi(request,id=0):
+def folderApi(request,id=None):
+    response = {}
+    data = {}
+    if id:
+        try:
+            folder = Folder.objects.get(id_folder=id)
+        except ObjectDoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
     if request.method == 'GET':
-        if id != 0:
+        if id:
             folder = Folder.objects.get(id_folder=id)
             serializer = FolderSerializer(folder, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
         else:
             folders = Folder.objects.all()
             serializer = FolderSerializer(folders, many=True)
-        return Response(serializer.data)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
     elif request.method == 'POST':
         serializer = FolderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'Folder creado correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
+        else:
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['data'] =[]
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
     elif request.method == 'PUT':
-        folder = Folder.objects.get(id_folder=id)
-        serializer = FolderSerializer(folder, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if id:
+            folder = Folder.objects.get(id_folder=id)
+            serializer = FolderSerializer(folder, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'Folder actualizado correctamente'
+                response['validations'] = []
+                response['data'] = serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error en validaciones'
+                response['validations'] = serializer.errors
+                response['data'] = []
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
     elif request.method == 'DELETE':
-        folder = Folder.objects.get(id_folder=id)
-        folder.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        if id:
+            folder = Folder.objects.get(id_folder=id)
+            folder.delete()
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+    return Response(response)
 @api_view(['GET','POST','DELETE','PUT'])
-def taskApi(request,id=0):
+def taskApi(request,id=None):
+    response = {}
+    data = {}
+    if id:
+        try:
+            task = Task.objects.get(id_task=id)
+        except ObjectDoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
     if request.method == 'GET':
-        if id != 0:
+        if id:
             task = Task.objects.get(id_task=id)
             serializer = TaskSerializer(task, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
         else:
             tasks = Task.objects.all()
             serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
     elif request.method == 'POST':
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'Tarea creado correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
+        else:
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['data'] =[]
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
     elif request.method == 'PUT':
         task = Task.objects.get(id_task=id)
         serializer = TaskSerializer(task, data=request.data)
@@ -145,33 +209,78 @@ def taskApi(request,id=0):
     elif request.method == 'DELETE':
         task = Task.objects.get(id_task=id)
         task.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+    return Response(response)
 @api_view(['GET','POST','DELETE','PUT'])
-def subtaskApi(request,id=0):
+def subtaskApi(request,id=None):
+    response = {}
+    data = {}
+    if id:
+        try:
+            subtask = Sub_task.objects.get(id_sub_task=id)
+        except ObjectDoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
     if request.method == 'GET':
-        if id != 0:
+        if id:
             subtask = Sub_task.objects.get(id_sub_task=id)
             serializer = SubTaskSerializer(subtask, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
         else:
             subtasks = Sub_task.objects.all()
             serializer = SubTaskSerializer(subtasks, many=True)
-        return Response(serializer.data)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
     elif request.method == 'POST':
         serializer = SubTaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'Sub-tarea creada correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
+        else:
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['data'] =[]
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
     elif request.method == 'PUT':
-        subtask = Sub_task.objects.get(id_sub_task=id)
-        serializer = SubTaskSerializer(subtask, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if id:
+            subtask = Sub_task.objects.get(id_sub_task=id)
+            serializer = SubTaskSerializer(subtask, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'Sub-tarea actualizada correctamente'
+                response['validations'] = []
+                response['data'] = serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error en validaciones'
+                response['validations'] = serializer.errors
+                response['data'] = []
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
     elif request.method == 'DELETE':
-        subtask = Sub_task.objects.get(id_sub_task=id)
-        subtask.delete()
-        return JsonResponse("Deleted successfully", safe=False)
+        if id:
+            subtask = Sub_task.objects.get(id_sub_task=id)
+            subtask.delete()
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+    return Response(response)
 
 
