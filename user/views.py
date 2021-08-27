@@ -1,20 +1,20 @@
 from django.shortcuts import render
-from django.http import JsonResponse
 from rest_framework import status
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
 from user.models import Folder, Task, Sub_task
 from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer
 
-from rest_framework.authtoken.views import ObtainAuthToken
-
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
 
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 @api_view(['GET','POST','DELETE','PUT'])
+@permission_classes([IsAuthenticated])
 def userApi(request,id=None):
     response = {}
     data = {}
