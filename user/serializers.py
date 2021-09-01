@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from user.models import Folder, Task, Sub_task
 from django.contrib.auth.models import User  
-# from django.contrib.auth.hashers import make_password #Encriptar contraseña
+from django.contrib.auth import authenticate
 
 class SubTaskSerializer(serializers.ModelSerializer):
     task_name = serializers.ReadOnlyField(source='task.desc_task')
@@ -38,3 +38,25 @@ class FolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folder
         fields = '__all__'
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(
+        label=("Password"),
+        style={'input_type': 'password'},
+        trim_whitespace=False,
+        max_length=128,
+        write_only=True
+    )
+
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
+
+        user = authenticate(request=self.context.get('request'), username=username, password=password)
+        if not user:
+            msg = ('Las credenciales son incorrectas')
+            raise serializers.ValidationError(msg, code='authorization')
+
+        data['user'] = user
+        return data

@@ -14,4 +14,5 @@ urlpatterns = [
     path('subtask/',views.subtaskApi,name="subtaskApi"),
     path('subtask',views.subtaskApi,name="subtaskApi"),
     path('subtask/<int:id>',views.subtaskApi,name="subtaskApi"),
+    path('login/',views.login,name="login"),
 ]

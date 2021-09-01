@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
 from user.models import Folder, Task, Sub_task
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,7 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 @api_view(['GET','POST','DELETE','PUT'])
-@permission_classes([IsAuthenticated])
 def userApi(request,id=None):
     response = {}
     data = {}
@@ -282,5 +281,13 @@ def subtaskApi(request,id=None):
             response['validations'] = []
             response['data'] = []
     return Response(response)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    serializer = LoginSerializer(data=request.data, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    user = serializer.validated_data['user']
+    token, created = Token.objects.get_or_create(user=user)
+    return Response({"status": status.HTTP_200_OK, "Token": token.key})
 
 

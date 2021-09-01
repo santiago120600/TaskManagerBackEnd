@@ -21,7 +21,7 @@ class Task(models.Model):
     desc_task = models.TextField()
     completed = models.BooleanField(default=False)
     user  = models.ForeignKey(User, null=False,on_delete=models.CASCADE, related_name="users")
-    folder = models.ForeignKey(Folder, related_name="tasks", null=False,on_delete=models.CASCADE)
+    folder = models.ForeignKey(Folder, related_name="tasks", null=True,blank=True,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
 
