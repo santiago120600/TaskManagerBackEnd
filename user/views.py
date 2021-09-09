@@ -284,10 +284,19 @@ def subtaskApi(request,id=None):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
+    response = {}
+    data = {}
     serializer = LoginSerializer(data=request.data, context={'request': request})
-    serializer.is_valid(raise_exception=True)
-    user = serializer.validated_data['user']
-    token, created = Token.objects.get_or_create(user=user)
-    return Response({"status": status.HTTP_200_OK, "Token": token.key})
-
-
+    if serializer.is_valid():
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        response['status'] = status.HTTP_200_OK
+        response['message'] = 'OK'
+        # data['email'] = account.email
+        # data['username'] = user
+        data['token'] = token.key
+    else:
+        response['status'] = status.HTTP_401_UNAUTHORIZED
+        response['message'] = 'Credenciales incorrectas'
+    response['data'] = data
+    return Response(response)

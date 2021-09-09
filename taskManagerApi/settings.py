@@ -25,9 +25,6 @@ SECRET_KEY = '$0%03w!*580st2lz4%89pane#@r(r5wh!)h-#hy+6%m9np!y_k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost','127.0.0.1']
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,7 +52,15 @@ REST_FRAMEWORK = {
     ],
 }
 
+#ALLOWED_HOSTS = ['0.0.0.0', 'localhost','127.0.0.1']
+ALLOWED_HOSTS = ['*']
+CORS_ALLOW_HEADERS = ['*']
 CORS_ORIGIN_ALLOW_ALL  = True
+# CORS_ORIGIN_WHITELIST = (
+    # 'http://localhost:8000',
+# )
+# CSRF_TRUSTED_ORIGINS = ['*']
+# CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
