@@ -13,10 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+response = {}
+data = {}
 @api_view(['GET','POST','DELETE','PUT'])
 def userApi(request,id=None):
-    response = {}
-    data = {}
     if id:
         try:
             user = User.objects.get(id=id)
@@ -189,7 +189,7 @@ def taskApi(request,id=None):
         if serializer.is_valid():
             serializer.save()
             response['status'] = status.HTTP_201_CREATED
-            response['message'] = 'Tarea creado correctamente'
+            response['message'] = 'Tarea creada correctamente'
             response['data'] = serializer.data
             response['validations'] =[]
         else:
@@ -202,8 +202,15 @@ def taskApi(request,id=None):
         serializer = TaskSerializer(task, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response['status'] =status.HTTP_202_ACCEPTED
+            response['message'] = 'Tarea actualizada correctamente'
+            response['validations'] = []
+            response['data'] = serializer.data
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
+            response['data'] = []
     elif request.method == 'DELETE':
         task = Task.objects.get(id_task=id)
         task.delete()
@@ -283,13 +290,10 @@ def subtaskApi(request,id=None):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-    response = {}
-    data = {}
     serializer = LoginSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        # user = User.objects.get(username=user)
         serializer = UserSerializer(user, many=False)
         account = serializer.data
         response['status'] = status.HTTP_200_OK
@@ -306,8 +310,6 @@ def login(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    response = {}
-    data = {}
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         account = serializer.save()
