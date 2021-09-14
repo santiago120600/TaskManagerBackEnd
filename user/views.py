@@ -46,7 +46,6 @@ def userApi(request,id=None):
             response['message'] = 'Usuario creado'
             data['email'] = account.email
             data['username'] = account.username
-            data['token'] = Token.objects.get(user=account).key
             response['data'] = data
             response['validations'] = []
         else:
@@ -290,13 +289,38 @@ def login(request):
     if serializer.is_valid():
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
+        # user = User.objects.get(username=user)
+        serializer = UserSerializer(user, many=False)
+        account = serializer.data
         response['status'] = status.HTTP_200_OK
         response['message'] = 'OK'
-        # data['email'] = account.email
-        # data['username'] = user
-        data['token'] = token.key
+        data['id_user'] = account['id']
+        data['email'] = account['email']
+        data['username'] = account['username']
+        response['token'] = token.key
     else:
         response['status'] = status.HTTP_401_UNAUTHORIZED
         response['message'] = 'Credenciales incorrectas'
     response['data'] = data
+    return Response(response)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    response = {}
+    data = {}
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        account = serializer.save()
+        response['status'] =status.HTTP_201_CREATED
+        response['message'] = 'Usuario creado'
+        data['email'] = account.email
+        data['username'] = account.username
+        response['token'] = Token.objects.get(user=account).key
+        response['data'] = data
+        response['validations'] = []
+    else:
+        response['status'] =status.HTTP_400_BAD_REQUEST
+        response['data'] = []
+        response['message'] = 'Error de validaciones'
+        response['validations'] =serializer.errors 
     return Response(response)

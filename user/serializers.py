@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id','username','email','password','tasks')
+        fields = ('id','username','email','password','tasks','first_name','last_name')
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)
