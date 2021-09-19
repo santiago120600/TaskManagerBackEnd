@@ -13,10 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-response = {}
-data = {}
 @api_view(['GET','POST','DELETE','PUT'])
 def userApi(request,id=None):
+    response = {}
+    data = {}
     if id:
         try:
             user = User.objects.get(id=id)
@@ -290,6 +290,8 @@ def subtaskApi(request,id=None):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
+    response = {}
+    data = {}
     serializer = LoginSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         user = serializer.validated_data['user']
@@ -310,6 +312,8 @@ def login(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
+    response = {}
+    data = {}
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         account = serializer.save()
