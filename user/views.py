@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
-from user.models import Folder, Task, Sub_task
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer
+from user.models import Folder, Task, Sub_task, Project
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
@@ -198,22 +198,106 @@ def taskApi(request,id=None):
             response['message'] = 'Error en validaciones'
             response['validations'] = serializer.errors
     elif request.method == 'PUT':
-        task = Task.objects.get(id_task=id)
-        serializer = TaskSerializer(task, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            response['status'] =status.HTTP_202_ACCEPTED
-            response['message'] = 'Tarea actualizada correctamente'
-            response['validations'] = []
-            response['data'] = serializer.data
+        if id:
+            task = Task.objects.get(id_task=id)
+            serializer = TaskSerializer(task, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'Tarea actualizada correctamente'
+                response['validations'] = []
+                response['data'] = serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error en validaciones'
+                response['validations'] = serializer.errors
+                response['data'] = []
         else:
             response['status'] =status.HTTP_400_BAD_REQUEST
-            response['message'] = 'Error en validaciones'
-            response['validations'] = serializer.errors
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
             response['data'] = []
     elif request.method == 'DELETE':
         task = Task.objects.get(id_task=id)
         task.delete()
+    return Response(response)
+@api_view(['GET','POST','DELETE','PUT'])
+def projectApi(request,id=None):
+    response = {}
+    data = {}
+    try:
+        user_id = request.GET['user_id']
+    except:
+        user_id = None
+    if id:
+        try:
+            project = Project.objects.get(id=id)
+        except ObjectDoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
+    if request.method == 'GET':
+        if id:
+            project = Project.objects.get(id=id)
+            serializer = ProjectSerializer(project, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+        if user_id:
+            try:
+                project = Project.objects.filter(user_id=user_id)
+                serializer = ProjectSerializer(project, many=True)
+                response['status'] = status.HTTP_200_OK
+                response['message'] = 'OK'
+                response['data'] = serializer.data
+            except ObjectDoesNotExist:
+                response['status'] = status.HTTP_404_NOT_FOUND
+                response['message'] = 'No encontrado'
+                response['data'] = []
+                return Response(response)
+        else:
+            projects = Project.objects.all()
+            serializer = ProjectSerializer(projects, many=True)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+    elif request.method == 'POST':
+        serializer = ProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'Proyecto creado correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
+        else:
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['data'] =[]
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
+    elif request.method == 'PUT':
+        if id:
+            project = Project.objects.get(id=id)
+            serializer = ProjectSerializer(project, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'Proyecto actualizado correctamente'
+                response['validations'] = []
+                response['data'] = serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error en validaciones'
+                response['validations'] = serializer.errors
+                response['data'] = []
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+    elif request.method == 'DELETE':
+        project = Project.objects.get(id=id)
+        project.delete()
     return Response(response)
 @api_view(['GET','POST','DELETE','PUT'])
 def subtaskApi(request,id=None):

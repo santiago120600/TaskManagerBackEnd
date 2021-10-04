@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from user.models import Folder, Task, Sub_task
+from user.models import Folder, Task, Sub_task, Project
 from django.contrib.auth.models import User  
 from django.contrib.auth import authenticate
 
@@ -11,12 +11,18 @@ class SubTaskSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class TaskSerializer(serializers.ModelSerializer):
-    user_name = serializers.ReadOnlyField(source='user.username')
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     class Meta:
         model = Task
-        fields =  ('id_task','img_task','desc_task','completed','user','user_name','folder','folder_name','created_at','updated_at', 'subtasks')
+        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task')
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ('id','name_project','user')
+        read_only_fields = ('id',)
+
 
 class UserSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(source='users',many=True, read_only=True)

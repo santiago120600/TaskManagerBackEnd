@@ -5,6 +5,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
+class Project(models.Model):
+    name_project = models.CharField(max_length=80)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user  = models.ForeignKey(User, null=False,on_delete=models.CASCADE, related_name="users")
+
 class Folder(models.Model):
     id_folder  = models.AutoField(primary_key=True)
     name_folder = models.CharField(max_length=80)
@@ -18,10 +23,12 @@ class Folder(models.Model):
 class Task(models.Model):
     id_task  = models.AutoField(primary_key=True)
     img_task = models.ImageField(upload_to='uploads',blank=True, null=True)
+    title_task = models.CharField(max_length=80,null=True,blank=True)
+    due_date_task = models.DateField(null=True,blank=True)
     desc_task = models.TextField()
     completed = models.BooleanField(default=False)
-    user  = models.ForeignKey(User, null=False,on_delete=models.CASCADE, related_name="users")
     folder = models.ForeignKey(Folder, related_name="tasks", null=True,blank=True,on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, null=True, blank="True",on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
 
