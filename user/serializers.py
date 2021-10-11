@@ -15,7 +15,7 @@ class TaskSerializer(serializers.ModelSerializer):
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     class Meta:
         model = Task
-        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task')
+        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project')
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,7 +25,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    tasks = TaskSerializer(source='users',many=True, read_only=True)
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     password = serializers.CharField(min_length=8)
     
@@ -37,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id','username','email','password','tasks','first_name','last_name')
+        fields = ('id','username','email','password','first_name','last_name')
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)

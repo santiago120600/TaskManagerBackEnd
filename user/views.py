@@ -163,6 +163,10 @@ def folderApi(request,id=None):
 def taskApi(request,id=None):
     response = {}
     data = {}
+    try:
+        project_id = request.GET['project_id']
+    except:
+        project_id = None
     if id:
         try:
             task = Task.objects.get(id_task=id)
@@ -178,6 +182,18 @@ def taskApi(request,id=None):
             response['status'] = status.HTTP_200_OK
             response['message'] = 'OK'
             response['data'] = serializer.data
+        if project_id:
+            try:
+                task = Task.objects.filter(project_id=project_id)
+                serializer = TaskSerializer(task, many=True)
+                response['status'] = status.HTTP_200_OK
+                response['message'] = 'OK'
+                response['data'] = serializer.data
+            except ObjectDoesNotExist:
+                response['status'] = status.HTTP_404_NOT_FOUND
+                response['message'] = 'No encontrado'
+                response['data'] = []
+                return Response(response)
         else:
             tasks = Task.objects.all()
             serializer = TaskSerializer(tasks, many=True)
