@@ -10,6 +10,7 @@ urlpatterns = [
     path('folder/<int:id>',views.folderApi,name="folderApi"),
     path('task/',views.taskApi,name="taskApi"),
     path('task',views.taskApi,name="taskApi"),
+    path('task/<int:id>',views.taskApi,name="taskApi"),
     path('project',views.projectApi,name="projectApi"),
     path('project/',views.projectApi,name="projectApi"),
     path('project/<int:id>',views.projectApi,name="projectApi"),

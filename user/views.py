@@ -421,6 +421,7 @@ def register(request):
         response['message'] = 'Usuario creado'
         data['email'] = account.email
         data['username'] = account.username
+        data['id_user'] = account.id
         response['token'] = Token.objects.get(user=account).key
         response['data'] = data
         response['validations'] = []
