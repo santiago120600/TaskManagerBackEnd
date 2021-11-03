@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '$0%03w!*580st2lz4%89pane#@r(r5wh!)h-#hy+6%m9np!y_k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -100,11 +100,11 @@ WSGI_APPLICATION = 'taskManagerApi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'taskmanager',
-        'HOST': 'db',
+        'NAME': 'heroku_619f45dc24cffce',
+        'HOST': 'us-cdbr-east-02.cleardb.com',
         'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'password',
+        'USER': 'bc25530034641a',
+        'PASSWORD': '779e4a8c',
     }
 }
 
