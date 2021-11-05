@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from user.models import Folder, Task, Sub_task, Project
+from user.models import Folder, Task, Sub_task, Project, User_Project, Task_file, Task_User, Comment
 from django.contrib.auth.models import User  
 from django.contrib.auth import authenticate
 
@@ -17,12 +17,15 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project')
 
-class ProjectSerializer(serializers.ModelSerializer):
+class TaskFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Project
-        fields = ('id','name_project','user')
-        read_only_fields = ('id',)
+        model = Task_file
+        fields = ('desc_task','project')
 
+class TaskUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task_User
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
@@ -37,6 +40,28 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id','username','email','password','first_name','last_name')
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer('user_set',many=False, read_only=True)
+    task =  TaskSerializer('task_set',many=False, read_only=True)
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+class UserProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User_Project
+        fields = ('user','project')
+
+class ProjectSerializer(serializers.ModelSerializer):
+    projects = UserProjectSerializer('project_set',many=True, read_only=True)
+    print(projects)
+    class Meta:
+        model = Project
+        fields = ('id','name_project','projects')
+        read_only_fields = ('id',)
+        #tengo una tabla intermedia User_Project fields user y project
+        #debo traer todos los usuarios que tengan el id de ese proyecto
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)

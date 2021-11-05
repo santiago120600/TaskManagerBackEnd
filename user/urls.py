@@ -21,4 +21,7 @@ urlpatterns = [
     path('login',views.login,name="login"),
     path('register/',views.register,name="register"),
     path('register',views.register,name="register"),
+    path('comment/',views.commentApi,name="commentApi"),
+    path('comment',views.commentApi,name="commentApi"),
+    path('comment/<int:id>',views.commentApi,name="commentApi"),
 ]

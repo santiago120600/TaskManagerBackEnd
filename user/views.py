@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
-from user.models import Folder, Task, Sub_task, Project
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer
+from user.models import Folder, Task, Sub_task, Project, User_Project, Task_file, Task_User, Comment
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskUserSerializer, TaskFileSerializer, UserProjectSerializer
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
@@ -430,4 +430,76 @@ def register(request):
         response['data'] = []
         response['message'] = 'Error de validaciones'
         response['validations'] =serializer.errors 
+    return Response(response)
+@api_view(['GET','POST','DELETE','PUT'])
+def commentApi(request,id=None):
+    response = {}
+    data = {}
+    if id:
+        try:
+            comment = Comment.objects.get(id=id)
+        except ObjectDoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
+    if request.method == 'GET':
+        if id:
+            comment = Comment.objects.get(id=id)
+            serializer = CommentSerializer(comment, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+        else:
+            comments = Comment.objects.all()
+            serializer = CommentSerializer(comments, many=True)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+    elif request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'comentario creado correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
+        else:
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['data'] =[]
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
+    elif request.method == 'PUT':
+        if id:
+            comment = Comment.objects.get(id=id)
+            serializer = CommentSerializer(comment, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'comentario actualizado correctamente'
+                response['validations'] = []
+                response['data'] = serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error en validaciones'
+                response['validations'] = serializer.errors
+                response['data'] = []
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+    elif request.method == 'DELETE':
+        if id:
+            comment = Comment.objects.get(id=id)
+            comment.delete()
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
     return Response(response)
