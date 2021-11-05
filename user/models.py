@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 class Project(models.Model):
     name_project = models.CharField(max_length=80)
     img_task = models.ImageField(upload_to='uploads/',blank=True, null=True)
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
 
@@ -30,17 +30,16 @@ class Task(models.Model):
     desc_task = models.TextField()
     completed = models.BooleanField(default=False)
     folder = models.ForeignKey(Folder, related_name="tasks", null=True,blank=True,on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, null=False, blank="False",on_delete=models.CASCADE)
-    assigned_users = models.ManyToManyField(User)
+    project = models.ForeignKey(Project, null=False, blank=False,on_delete=models.CASCADE)
+    assigned_users = models.ManyToManyField(User, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
 
     def __str__(self):
         return self.desc_task
 
-# tabla para relacionar los archivos con una tarea
 class Task_file(models.Model):
-    task = models.ForeignKey(Task, null=False,on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, null=False ,blank=False, on_delete=models.CASCADE)
     file = models.FileField(blank=False, null=False, upload_to='uploads/')
 
 class Comment(models.Model):

@@ -13,7 +13,7 @@ class SubTaskSerializer(serializers.ModelSerializer):
 class TaskFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task_file
-        fields = ('desc_task','project')
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
@@ -30,13 +30,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id','username','email','password','first_name','last_name')
 
 class TaskSerializer(serializers.ModelSerializer):
-    # Quiero que me devuelva todos los archivos que esten relacionados con esta tarea
+    task_files = TaskFileSerializer('task_file_set', many=True, read_only=True)
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
-    assigned_users = UserSerializer('assigned_users_set', many=True)
+    assigned_users = UserSerializer('assigned_users_set', many=True, required=False)
     class Meta:
         model = Task
-        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users')
+        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users', 'task_files')
+        optional_fields = ['assigned_users', ]
 
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer('user_set',many=False, read_only=True)
@@ -46,10 +47,11 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProjectSerializer(serializers.ModelSerializer):
-    users =  UserSerializer('users_set',many=True)
+    users =  UserSerializer('users_set',many=True, required=False)
     class Meta:
         model = Project
         fields = ('name_project','id', 'users')
+        optional_fields = ['users', ]
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)

@@ -90,7 +90,6 @@ def userApi(request,id=None):
 @api_view(['GET','POST','DELETE','PUT'])
 def folderApi(request,id=None):
     response = {}
-    data = {}
     if id:
         try:
             folder = Folder.objects.get(id_folder=id)
@@ -162,7 +161,6 @@ def folderApi(request,id=None):
 @api_view(['GET','POST','DELETE','PUT'])
 def taskApi(request,id=None):
     response = {}
-    data = {}
     try:
         project_id = request.GET['project_id']
     except:
@@ -240,7 +238,6 @@ def taskApi(request,id=None):
 @api_view(['GET','POST','DELETE','PUT'])
 def projectApi(request,id=None):
     response = {}
-    data = {}
     try:
         user_id = request.GET['user_id']
     except:
@@ -318,7 +315,6 @@ def projectApi(request,id=None):
 @api_view(['GET','POST','DELETE','PUT'])
 def subtaskApi(request,id=None):
     response = {}
-    data = {}
     if id:
         try:
             subtask = Sub_task.objects.get(id_sub_task=id)
@@ -434,7 +430,6 @@ def register(request):
 @api_view(['GET','POST','DELETE','PUT'])
 def commentApi(request,id=None):
     response = {}
-    data = {}
     if id:
         try:
             comment = Comment.objects.get(id=id)
@@ -493,6 +488,77 @@ def commentApi(request,id=None):
         if id:
             comment = Comment.objects.get(id=id)
             comment.delete()
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+    return Response(response)
+@api_view(['GET','POST','DELETE','PUT'])
+def taskFileApi(request,id=None):
+    response = {}
+    if id:
+        try:
+            file = Task_file.objects.get(id=id)
+        except ObjectDoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['data'] = []
+            return Response(response)
+    if request.method == 'GET':
+        if id:
+            file = Task_file.objects.get(id=id)
+            serializer = TaskFileSerializer(file, many=False)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+        else:
+            files = Task_file.objects.all()
+            serializer = TaskFileSerializer(files, many=True)
+            response['status'] = status.HTTP_200_OK
+            response['message'] = 'OK'
+            response['data'] = serializer.data
+    elif request.method == 'POST':
+        serializer = TaskFileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'Archivo subido correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
+        else:
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['data'] =[]
+            response['message'] = 'Error en validaciones'
+            response['validations'] = serializer.errors
+    elif request.method == 'PUT':
+        if id:
+            file = Task_file.objects.get(id=id)
+            serializer = TaskFileSerializer(file, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response['status'] =status.HTTP_202_ACCEPTED
+                response['message'] = 'Archivo actualizado correctamente'
+                response['validations'] = []
+                response['data'] = serializer.data
+            else:
+                response['status'] =status.HTTP_400_BAD_REQUEST
+                response['message'] = 'Error en validaciones'
+                response['validations'] = serializer.errors
+                response['data'] = []
+        else:
+            response['status'] =status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Id no enviado'
+            response['validations'] = []
+            response['data'] = []
+    elif request.method == 'DELETE':
+        if id:
+            file = Task_file.objects.get(id=id)
+            file.delete()
             response['status'] =status.HTTP_200_OK
             response['message'] = 'Eliminado correctamente'
             response['validations'] = []

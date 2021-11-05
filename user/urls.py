@@ -24,4 +24,7 @@ urlpatterns = [
     path('comment/',views.commentApi,name="commentApi"),
     path('comment',views.commentApi,name="commentApi"),
     path('comment/<int:id>',views.commentApi,name="commentApi"),
+    path('file/',views.taskFileApi,name="taskFileApi"),
+    path('file',views.taskFileApi,name="taskFileApi"),
+    path('file/<int:id>',views.taskFileApi,name="taskFileApi"),
 ]
