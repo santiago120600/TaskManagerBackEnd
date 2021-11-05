@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
-from user.models import Folder, Task, Sub_task, Project, User_Project, Task_file, Task_User, Comment
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskUserSerializer, TaskFileSerializer, UserProjectSerializer
+from user.models import Folder, Task, Sub_task, Project, Task_file, Comment
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer 
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist

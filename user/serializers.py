@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from user.models import Folder, Task, Sub_task, Project, User_Project, Task_file, Task_User, Comment
+from user.models import Folder, Task, Sub_task, Project, Task_file, Comment
 from django.contrib.auth.models import User  
 from django.contrib.auth import authenticate
 
@@ -10,22 +10,10 @@ class SubTaskSerializer(serializers.ModelSerializer):
         model = Sub_task
         fields = "__all__"
 
-class TaskSerializer(serializers.ModelSerializer):
-    folder_name = serializers.ReadOnlyField(source='folder.name_folder')
-    subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
-    class Meta:
-        model = Task
-        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project')
-
 class TaskFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task_file
         fields = ('desc_task','project')
-
-class TaskUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task_User
-        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
@@ -41,6 +29,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id','username','email','password','first_name','last_name')
 
+class TaskSerializer(serializers.ModelSerializer):
+    # Quiero que me devuelva todos los archivos que esten relacionados con esta tarea
+    folder_name = serializers.ReadOnlyField(source='folder.name_folder')
+    subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
+    assigned_users = UserSerializer('assigned_users_set', many=True)
+    class Meta:
+        model = Task
+        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users')
+
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer('user_set',many=False, read_only=True)
     task =  TaskSerializer('task_set',many=False, read_only=True)
@@ -48,20 +45,11 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
-class UserProjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User_Project
-        fields = ('user','project')
-
 class ProjectSerializer(serializers.ModelSerializer):
-    projects = UserProjectSerializer('project_set',many=True, read_only=True)
-    print(projects)
+    users =  UserSerializer('users_set',many=True)
     class Meta:
         model = Project
-        fields = ('id','name_project','projects')
-        read_only_fields = ('id',)
-        #tengo una tabla intermedia User_Project fields user y project
-        #debo traer todos los usuarios que tengan el id de ese proyecto
+        fields = ('name_project','id', 'users')
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)
