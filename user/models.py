@@ -39,7 +39,7 @@ class Task(models.Model):
         return self.desc_task
 
 class Task_file(models.Model):
-    task = models.ForeignKey(Task, null=False ,blank=False, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, null=False ,blank=False, on_delete=models.CASCADE, related_name='files')
     file = models.FileField(blank=False, null=False, upload_to='uploads/')
 
 class Comment(models.Model):

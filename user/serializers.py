@@ -30,13 +30,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id','username','email','password','first_name','last_name')
 
 class TaskSerializer(serializers.ModelSerializer):
-    task_files = TaskFileSerializer('task_file_set', many=True, read_only=True)
+    files = TaskFileSerializer(many=True, read_only=True)
+    # files = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     assigned_users = UserSerializer('assigned_users_set', many=True, required=False)
     class Meta:
         model = Task
-        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users', 'task_files')
+        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users', 'files')
         optional_fields = ['assigned_users', ]
 
 class CommentSerializer(serializers.ModelSerializer):
