@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
 from user.models import Folder, Task, Sub_task, Project, Task_file, Comment
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer 
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer 
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
@@ -568,4 +568,43 @@ def taskFileApi(request,id=None):
             response['message'] = 'Id no enviado'
             response['validations'] = []
             response['data'] = []
+    return Response(response)
+@api_view(['POST','DELETE'])
+def userProject(request):
+    response = {}
+    validations = {}
+    request_data = request.data
+    serializer = AddUserSerializer(data=request.data)
+    if serializer.is_valid():
+        user_id = request_data['user']
+        project_id = request_data['project']
+        validations['user'] = ""
+        validations['project'] = ""
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            validations['user'] = "Usuario no encontrado"
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            validations['project'] = "proyecto no encontrado"
+        if validations['project'] != "" or validations['user'] != "":
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['validations'] = validations
+            response['data'] = []
+            return Response(response)
+        if request.method == 'POST':
+            project.users.add(user)
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Usuario agregado al proyecto'
+            response['data'] = serializer.data
+            response['validations'] = []
+        elif request.method == 'DELETE':
+            response['message'] = 'Not implemented yet'
+    else:    
+        response['status'] = status.HTTP_400_BAD_REQUEST
+        response['data'] =[]
+        response['message'] = 'Error en validaciones'
+        response['validations'] = serializer.errors
     return Response(response)

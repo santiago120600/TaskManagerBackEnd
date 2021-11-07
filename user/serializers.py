@@ -54,6 +54,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ('name_project','id', 'users')
         optional_fields = ['users', ]
 
+class AddUserSerializer(serializers.Serializer):
+    user = serializers.IntegerField()
+    project = serializers.IntegerField()
+
+
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)
     class Meta:
