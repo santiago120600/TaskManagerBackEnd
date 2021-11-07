@@ -600,8 +600,12 @@ def userProject(request):
             response['message'] = 'Usuario agregado al proyecto'
             response['data'] = serializer.data
             response['validations'] = []
-        elif request.method == 'DELETE':
-            response['message'] = 'Not implemented yet'
+        if request.method == 'DELETE':
+            project.users.remove(user)
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
     else:    
         response['status'] = status.HTTP_400_BAD_REQUEST
         response['data'] =[]
