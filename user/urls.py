@@ -28,5 +28,7 @@ urlpatterns = [
     path('file',views.taskFileApi,name="taskFileApi"),
     path('file/<int:id>',views.taskFileApi,name="taskFileApi"),
     path('userproject',views.userProject,name="userproject"),
-    path('userProject/',views.userProject,name="userProject"),
+    path('userproject/',views.userProject,name="userProject"),
+    path('usertask/',views.userTask,name="userTask"),
+    path('usertask',views.userTask,name="userTask"),
 ]

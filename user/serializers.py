@@ -16,8 +16,8 @@ class TaskFileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
-    password = serializers.CharField(min_length=8)
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())], write_only=True)
+    password = serializers.CharField(min_length=8, write_only=True)
     
     def create(self, validated_data):
        user = User(**validated_data) 
@@ -32,6 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     files = TaskFileSerializer(many=True, read_only=True)
     # files = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #obtener los comentarios de la tarea
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     assigned_users = UserSerializer('assigned_users_set', many=True, required=False)
@@ -41,8 +42,8 @@ class TaskSerializer(serializers.ModelSerializer):
         optional_fields = ['assigned_users', ]
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer('user_set',many=False, read_only=True)
-    task =  TaskSerializer('task_set',many=False, read_only=True)
+    users = UserSerializer('user_set',many=False, read_only=True)
+    tasks =  TaskSerializer('task_set',many=False, read_only=True)
     class Meta:
         model = Comment
         fields = '__all__'
@@ -58,6 +59,10 @@ class AddUserSerializer(serializers.Serializer):
     user = serializers.IntegerField()
     project = serializers.IntegerField()
 
+
+class AddUserToTaskSerializer(serializers.Serializer):
+    user = serializers.IntegerField()
+    task = serializers.IntegerField()
 
 class FolderSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer('tasks',many=True, read_only=True)

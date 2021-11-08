@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
 from user.models import Folder, Task, Sub_task, Project, Task_file, Comment
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer 
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer, AddUserToTaskSerializer 
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
@@ -397,7 +397,7 @@ def login(request):
         response['status'] = status.HTTP_200_OK
         response['message'] = 'OK'
         data['id_user'] = account['id']
-        data['email'] = account['email']
+        # data['email'] = account['email']
         data['username'] = account['username']
         response['token'] = token.key
     else:
@@ -602,6 +602,49 @@ def userProject(request):
             response['validations'] = []
         if request.method == 'DELETE':
             project.users.remove(user)
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Eliminado correctamente'
+            response['validations'] = []
+            response['data'] =[]
+    else:    
+        response['status'] = status.HTTP_400_BAD_REQUEST
+        response['data'] =[]
+        response['message'] = 'Error en validaciones'
+        response['validations'] = serializer.errors
+    return Response(response)
+@api_view(['POST','DELETE'])
+def userTask(request):
+    response = {}
+    validations = {}
+    request_data = request.data
+    serializer = AddUserToTaskSerializer(data=request.data)
+    if serializer.is_valid():
+        user_id = request_data['user']
+        task_id = request_data['task']
+        validations['user'] = ""
+        validations['task'] = ""
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            validations['user'] = "Usuario no encontrado"
+        try:
+            task = Task.objects.get(id_task=task_id)
+        except Task.DoesNotExist:
+            validations['task'] = "Tarea no encontrada"
+        if validations['task'] != "" or validations['user'] != "":
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['validations'] = validations
+            response['data'] = []
+            return Response(response)
+        if request.method == 'POST':
+            task.assigned_users.add(user)
+            response['status'] =status.HTTP_200_OK
+            response['message'] = 'Usuario agregado a la tarea'
+            response['data'] = serializer.data
+            response['validations'] = []
+        if request.method == 'DELETE':
+            task.assigned_users.remove(user)
             response['status'] =status.HTTP_200_OK
             response['message'] = 'Eliminado correctamente'
             response['validations'] = []
