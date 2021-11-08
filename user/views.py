@@ -6,12 +6,14 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
 from user.models import Folder, Task, Sub_task, Project, Task_file, Comment
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer, AddUserToTaskSerializer 
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer, AddUserToTaskSerializer, CreateProjectSerializer
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
+
+from django.db import transaction
 
 @api_view(['GET','POST','DELETE','PUT'])
 def userApi(request,id=None):
@@ -650,6 +652,35 @@ def userTask(request):
             response['validations'] = []
             response['data'] =[]
     else:    
+        response['status'] = status.HTTP_400_BAD_REQUEST
+        response['data'] =[]
+        response['message'] = 'Error en validaciones'
+        response['validations'] = serializer.errors
+    return Response(response)
+@api_view(['POST'])
+@transaction.atomic
+def createProject(request):
+    response = {}
+    serializer = CreateProjectSerializer(data=request.data)
+    if serializer.is_valid():
+        # crear proyecto
+        project = Project.objects.create(name_project=request.data['name_project'])
+        #checar que la persona existe
+        try:
+            user = User.objects.get(id=request.data['user'])
+        except User.DoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['validations'] = [{'user':'No encontrado'}]
+            response['data'] = []
+            return Response(response)
+        #agregar a la persona
+        project.users.add(user)
+        response['status'] = status.HTTP_201_CREATED
+        response['message'] = 'Proyecto creado correctamente'
+        response['data'] = serializer.data
+        response['validations'] =[]
+    else:
         response['status'] = status.HTTP_400_BAD_REQUEST
         response['data'] =[]
         response['message'] = 'Error en validaciones'

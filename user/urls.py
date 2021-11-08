@@ -31,4 +31,6 @@ urlpatterns = [
     path('userproject/',views.userProject,name="userProject"),
     path('usertask/',views.userTask,name="userTask"),
     path('usertask',views.userTask,name="userTask"),
+    path('createproject',views.createProject,name="createProject"),
+    path('createproject/',views.createProject,name="createProject"),
 ]

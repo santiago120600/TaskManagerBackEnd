@@ -41,7 +41,8 @@ class Task(models.Model):
     project = models.ForeignKey(Project, null=False, blank=False,on_delete=models.CASCADE)
     assigned_users = models.ManyToManyField(User, blank=True)
     # assigned_users = models.ManyToManyField(User, blank=True, through='Task_assigned_user')
-    comments = models.ManyToManyField(User, blank=True, through='Comment', related_name="tasks")
+    comments = models.ManyToManyField(User, blank=True, related_name="tasks")
+    # comments = models.ManyToManyField(User, blank=True, through='Comment', related_name="tasks")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
 

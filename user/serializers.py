@@ -30,13 +30,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id','username','email','password','first_name','last_name')
 
 class CommentSerializer(serializers.ModelSerializer):
+    user_name = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = Comment
         fields = '__all__'
 
 class TaskSerializer(serializers.ModelSerializer):
     files = TaskFileSerializer(many=True, read_only=True)
-    # comments = CommentSerializer('comment', many=True, read_only=True)
+    comments = CommentSerializer('tasks_set', many=True, read_only=False)  # No me regresa nada
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     assigned_users = UserSerializer('assigned_users_set', many=True, required=False)
@@ -52,6 +53,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('name_project','id', 'users')
         optional_fields = ['users', ]
+
+class CreateProjectSerializer(serializers.Serializer):
+    name_project = serializers.CharField(max_length=80)
+    user = serializers.IntegerField()
 
 class AddUserSerializer(serializers.Serializer):
     user = serializers.IntegerField()
