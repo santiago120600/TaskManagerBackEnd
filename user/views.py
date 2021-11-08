@@ -261,7 +261,8 @@ def projectApi(request,id=None):
             response['data'] = serializer.data
         if user_id:
             try:
-                project = Project.objects.filter(user_id=user_id)
+                project = Project.objects.filter(users__id=user_id)
+                print("PROJECT: ",project)
                 serializer = ProjectSerializer(project, many=True)
                 response['status'] = status.HTTP_200_OK
                 response['message'] = 'OK'
