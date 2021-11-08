@@ -686,3 +686,31 @@ def createProject(request):
         response['message'] = 'Error en validaciones'
         response['validations'] = serializer.errors
     return Response(response)
+@api_view(['GET'])
+def searchUser(request):
+    response = {}
+    data = {}
+    try:
+        request.data['user_email']
+    except:
+        response['status'] = status.HTTP_400_BAD_REQUEST
+        response['message'] = ' Error en validaciones'
+        response['validations'] = [{'user_email':'El campo es requerido'}]
+        response['data'] = []
+        return Response(response)
+    try:
+        user = User.objects.get(email=request.data['user_email'])
+    except User.DoesNotExist:
+        response['status'] = status.HTTP_404_NOT_FOUND
+        response['message'] = 'No encontrado'
+        response['validations'] = [{'user':'No encontrado'}]
+        response['data'] = []
+        return Response(response)
+    user = User.objects.get(email__exact=request.data['user_email'])
+    response['status'] = status.HTTP_200_OK
+    response['message'] = 'OK'
+    data['email'] = user.email
+    data['username'] = user.username
+    data['id'] = user.id
+    response['data'] = data
+    return Response(response)

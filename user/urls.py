@@ -33,4 +33,6 @@ urlpatterns = [
     path('usertask',views.userTask,name="userTask"),
     path('createproject',views.createProject,name="createProject"),
     path('createproject/',views.createProject,name="createProject"),
+    path('searchuser/',views.searchUser,name="searchUser"),
+    path('searchuser',views.searchUser,name="searchUser"),
 ]
