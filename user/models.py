@@ -8,9 +8,17 @@ from rest_framework.authtoken.models import Token
 class Project(models.Model):
     name_project = models.CharField(max_length=80)
     img_task = models.ImageField(upload_to='uploads/',blank=True, null=True)
-    users = models.ManyToManyField(User, blank=True)
+    # users = models.ManyToManyField(User, blank=True, through='Project_user') 
+    users = models.ManyToManyField(User, blank=True) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
+    
+# class Project_user(models.Model):
+    # project = models.ForeignKey(Project, null=False, blank=False,on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    # class Meta:
+        # unique_together = [['project','user']]
+
 
 class Folder(models.Model):
     id_folder  = models.AutoField(primary_key=True)
@@ -32,15 +40,19 @@ class Task(models.Model):
     folder = models.ForeignKey(Folder, related_name="tasks", null=True,blank=True,on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=False, blank=False,on_delete=models.CASCADE)
     assigned_users = models.ManyToManyField(User, blank=True)
+    # assigned_users = models.ManyToManyField(User, blank=True, through='Task_assigned_user')
+    comments = models.ManyToManyField(User, blank=True, through='Comment', related_name="tasks")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
 
     def __str__(self):
         return self.desc_task
 
-class Task_file(models.Model):
-    task = models.ForeignKey(Task, null=False ,blank=False, on_delete=models.CASCADE, related_name='files')
-    file = models.FileField(blank=False, null=False, upload_to='uploads/')
+# class Task_assigned_user():
+    # task = models.ForeignKey(Task, null=False, blank=False, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    # class Meta:
+        # unique_together = [['task','user']]
 
 class Comment(models.Model):
     desc_comment = models.TextField()
@@ -48,6 +60,10 @@ class Comment(models.Model):
     user  = models.ForeignKey(User, null=False,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
+
+class Task_file(models.Model):
+    task = models.ForeignKey(Task, null=False ,blank=False, on_delete=models.CASCADE, related_name='files')
+    file = models.FileField(blank=False, null=False, upload_to='uploads/')
 
 class Sub_task(models.Model):
     id_sub_task = models.AutoField(primary_key=True)

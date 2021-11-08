@@ -106,11 +106,11 @@ WSGI_APPLICATION = 'taskManagerApi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'heroku_619f45dc24cffce',
-        'HOST': 'us-cdbr-east-02.cleardb.com',
+        'NAME': 'taskmanager',
+        'HOST': 'localhost',
         'PORT': '3306',
-        'USER': 'bc25530034641a',
-        'PASSWORD': '779e4a8c',
+        'USER': 'root',
+        'PASSWORD': '',
     }
 }
 

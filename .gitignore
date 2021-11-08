@@ -9,6 +9,9 @@ notes.txt
 # uploads
 uploads/*
 
+# migrations
+user/migrations/*
+
 # Django #
 *.log
 *.pot
