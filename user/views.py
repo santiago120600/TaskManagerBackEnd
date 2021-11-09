@@ -182,7 +182,7 @@ def taskApi(request,id=None):
             response['status'] = status.HTTP_200_OK
             response['message'] = 'OK'
             response['data'] = serializer.data
-        if project_id:
+        elif project_id:
             try:
                 task = Task.objects.filter(project_id=project_id)
                 serializer = TaskSerializer(task, many=True)
@@ -259,7 +259,7 @@ def projectApi(request,id=None):
             response['status'] = status.HTTP_200_OK
             response['message'] = 'OK'
             response['data'] = serializer.data
-        if user_id:
+        elif user_id:
             try:
                 project = Project.objects.filter(users__id=user_id)
                 print("PROJECT: ",project)
