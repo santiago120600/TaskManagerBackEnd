@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User  
 from user.models import Folder, Task, Sub_task, Project, Task_file, Comment
-from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer, AddUserToTaskSerializer, CreateProjectSerializer
+from user.serializers import UserSerializer, FolderSerializer, TaskSerializer, SubTaskSerializer, LoginSerializer, ProjectSerializer, CommentSerializer, TaskFileSerializer, AddUserSerializer, AddUserToTaskSerializer, CreateProjectSerializer, AddUserToProjectSerializer
 
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
@@ -237,7 +237,7 @@ def taskApi(request,id=None):
         task = Task.objects.get(id_task=id)
         task.delete()
     return Response(response)
-@api_view(['GET','POST','DELETE','PUT'])
+@api_view(['GET','DELETE','PUT'])
 def projectApi(request,id=None):
     response = {}
     try:
@@ -714,4 +714,39 @@ def searchUser(request):
     data['username'] = user.username
     data['id'] = user.id
     response['data'] = data
+    return Response(response)
+@api_view(['POST'])
+def addUserProject(request):
+    response = {}
+    serializer = AddUserToProjectSerializer(data=request.data)
+    if serializer.is_valid():
+        # buscar el username si existe entonces agregarlo al proyecto
+        try:
+            user = User.objects.get(username=request.data['username'])
+        except User.DoesNotExist:
+            #si no existe el usario mandar un no encontrado
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['validations'] = [{'username':'No encontrado'}]
+            response['data'] = []
+            return Response(response)
+        # checar si existe el proyecto
+        try:
+            project = Project.objects.get(id=request.data['project'])
+        except Project.DoesNotExist:
+            response['status'] = status.HTTP_404_NOT_FOUND
+            response['message'] = 'No encontrado'
+            response['validations'] = [{'project':'No encontrado'}]
+            response['data'] = []
+            return Response(response)
+        project.users.add(user)
+        response['status'] = status.HTTP_201_CREATED
+        response['message'] = 'Usuario agregado correctamente'
+        response['data'] = serializer.data
+        response['validations'] =[]
+    else:    
+        response['status'] = status.HTTP_400_BAD_REQUEST
+        response['data'] =[]
+        response['message'] = 'Error en validaciones'
+        response['validations'] = serializer.errors
     return Response(response)

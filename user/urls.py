@@ -35,4 +35,6 @@ urlpatterns = [
     path('createproject/',views.createProject,name="createProject"),
     path('searchuser/',views.searchUser,name="searchUser"),
     path('searchuser',views.searchUser,name="searchUser"),
+    path('adduserproject',views.addUserProject,name="addUserProject"),
+    path('adduserproject/',views.addUserProject,name="addUserProject"),
 ]
