@@ -739,11 +739,19 @@ def addUserProject(request):
             response['validations'] = [{'project':'No encontrado'}]
             response['data'] = []
             return Response(response)
-        project.users.add(user)
-        response['status'] = status.HTTP_201_CREATED
-        response['message'] = 'Usuario agregado correctamente'
-        response['data'] = serializer.data
-        response['validations'] =[]
+        # checar si el usuario ya existe en este proyecto
+        serializer = UserSerializer(user, many=False)
+        if(project.users.filter(id = serializer.data['id']).exists()):
+            response['status'] = status.HTTP_400_BAD_REQUEST
+            response['message'] = 'Este usuario ya está agregado a este proyecto.'
+            response['validations'] = [{'user':'ya existe en el proyecto'}]
+            response['data'] = []
+        else:
+            project.users.add(user)
+            response['status'] = status.HTTP_201_CREATED
+            response['message'] = 'Usuario agregado correctamente'
+            response['data'] = serializer.data
+            response['validations'] =[]
     else:    
         response['status'] = status.HTTP_400_BAD_REQUEST
         response['data'] =[]
