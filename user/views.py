@@ -433,6 +433,10 @@ def register(request):
 @api_view(['GET','POST','DELETE','PUT'])
 def commentApi(request,id=None):
     response = {}
+    try:
+        task_id = request.GET['task_id']
+    except:
+        task_id = None
     if id:
         try:
             comment = Comment.objects.get(id=id)
@@ -443,12 +447,26 @@ def commentApi(request,id=None):
             return Response(response)
     if request.method == 'GET':
         if id:
+            print("PQ")
             comment = Comment.objects.get(id=id)
             serializer = CommentSerializer(comment, many=False)
             response['status'] = status.HTTP_200_OK
             response['message'] = 'OK'
             response['data'] = serializer.data
+        elif task_id:
+            try:
+                comment = Comment.objects.filter(task=task_id)
+                serializer = CommentSerializer(comment, many=True)
+                response['status'] = status.HTTP_200_OK
+                response['message'] = 'OK'
+                response['data'] = serializer.data
+            except Comment.DoesNotExist:
+                response['status'] = status.HTTP_404_NOT_FOUND
+                response['message'] = 'No encontrado'
+                response['data'] = []
+                return Response(response)
         else:
+            print("HOLA")
             comments = Comment.objects.all()
             serializer = CommentSerializer(comments, many=True)
             response['status'] = status.HTTP_200_OK

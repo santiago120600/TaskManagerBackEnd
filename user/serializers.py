@@ -37,13 +37,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     files = TaskFileSerializer(many=True, read_only=True)
-    comments = CommentSerializer('tasks_set', many=True, read_only=True)  # No me regresa nada
     folder_name = serializers.ReadOnlyField(source='folder.name_folder')
     subtasks = SubTaskSerializer('subtasks',many=True, read_only=True)
     assigned_users = UserSerializer('assigned_users_set', many=True, required=False)
     class Meta:
         model = Task
-        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users', 'files', 'comments')
+        fields =  ('id_task','img_task','desc_task','completed','folder','folder_name','created_at','updated_at', 'subtasks','title_task','due_date_task', 'project', 'assigned_users', 'files')
         optional_fields = ['assigned_users', ]
         # depth = 1
 
