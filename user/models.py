@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 
 class Project(models.Model):
     name_project = models.CharField(max_length=80)
-    img_task = models.ImageField(upload_to='uploads/',blank=True, null=True)
+    img_project = models.ImageField(upload_to='uploads/',blank=True, null=True)
     users = models.ManyToManyField(User, blank=True) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)

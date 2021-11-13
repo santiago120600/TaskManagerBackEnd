@@ -33,7 +33,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
@@ -41,6 +43,15 @@ INSTALLED_APPS = [
     'corsheaders',
     'user',
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dvpdb72a9',
+    'API_KEY': '754284135232439',
+    'API_SECRET': 'faj6E7hOEOs1CgTtkwXGVWukUIk'
+}
+
+MEDIA_URL = '/media/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 REST_FRAMEWORK = {
