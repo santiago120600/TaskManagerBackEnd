@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from django.core.validators import FileExtensionValidator
 
 class Project(models.Model):
     name_project = models.CharField(max_length=80)
@@ -48,7 +49,7 @@ class Comment(models.Model):
 
 class Task_file(models.Model):
     task = models.ForeignKey(Task, null=False ,blank=False, on_delete=models.CASCADE, related_name='files')
-    file = models.FileField(blank=False, null=False, upload_to='uploads/')
+    file = models.FileField(blank=False, null=False, upload_to='uploads/',validators=[FileExtensionValidator(allowed_extensions=['pdf','png','jpg'])])
 
 class Sub_task(models.Model):
     id_sub_task = models.AutoField(primary_key=True)

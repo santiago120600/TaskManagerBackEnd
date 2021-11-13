@@ -6,9 +6,6 @@
 # notes
 notes.txt
 
-# uploads
-uploads/*
-
 # migrations
 user/migrations/*
 
