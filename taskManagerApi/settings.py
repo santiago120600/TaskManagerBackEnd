@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '$0%03w!*580st2lz4%89pane#@r(r5wh!)h-#hy+6%m9np!y_k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',
     'cloudinary_storage',
     'django.contrib.staticfiles',
     'cloudinary',
@@ -63,23 +62,13 @@ REST_FRAMEWORK = {
     ],
 }
 
-#ALLOWED_HOSTS = ['0.0.0.0', 'localhost','127.0.0.1']
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_HEADERS = ['*']
 CORS_ORIGIN_ALLOW_ALL  = True
-# CORS_ORIGIN_WHITELIST = (
-    # 'http://localhost:8000',
-# )
-# CSRF_TRUSTED_ORIGINS = ['*']
-# CORS_ALLOW_CREDENTIALS = True
-
-WHITENOISE_USE_FINDERS = True
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
