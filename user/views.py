@@ -590,7 +590,7 @@ def taskFileApi(request,id=None):
             response['validations'] = []
             response['data'] = []
     return Response(response)
-@api_view(['POST','DELETE'])
+@api_view(['POST','PUT'])
 def userProject(request):
     response = {}
     validations = {}
@@ -621,7 +621,7 @@ def userProject(request):
             response['message'] = 'Usuario agregado al proyecto'
             response['data'] = serializer.data
             response['validations'] = []
-        if request.method == 'DELETE':
+        if request.method == 'PUT':
             project.users.remove(user)
             response['status'] =status.HTTP_200_OK
             response['message'] = 'Eliminado correctamente'
@@ -633,7 +633,7 @@ def userProject(request):
         response['message'] = 'Error en validaciones'
         response['validations'] = serializer.errors
     return Response(response)
-@api_view(['POST','DELETE'])
+@api_view(['POST','PUT'])
 def userTask(request):
     response = {}
     validations = {}
@@ -664,7 +664,7 @@ def userTask(request):
             response['message'] = 'Usuario agregado a la tarea'
             response['data'] = serializer.data
             response['validations'] = []
-        if request.method == 'DELETE':
+        if request.method == 'PUT':
             task.assigned_users.remove(user)
             response['status'] =status.HTTP_200_OK
             response['message'] = 'Eliminado correctamente'
