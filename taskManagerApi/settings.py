@@ -45,9 +45,9 @@ INSTALLED_APPS = [
 ]
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dvpdb72a9',
-    'API_KEY': '754284135232439',
-    'API_SECRET': 'faj6E7hOEOs1CgTtkwXGVWukUIk',
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
     'EXCLUDE_DELETE_ORPHANED_MEDIA_PATHS': (),
     'STATIC_IMAGES_EXTENSIONS': ['jpg', 'png'],
 }
