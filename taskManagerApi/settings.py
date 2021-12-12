@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,10 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$0%03w!*580st2lz4%89pane#@r(r5wh!)h-#hy+6%m9np!y_k'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG')
 
 # Application definition
 
@@ -46,7 +47,9 @@ INSTALLED_APPS = [
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dvpdb72a9',
     'API_KEY': '754284135232439',
-    'API_SECRET': 'faj6E7hOEOs1CgTtkwXGVWukUIk'
+    'API_SECRET': 'faj6E7hOEOs1CgTtkwXGVWukUIk',
+    'EXCLUDE_DELETE_ORPHANED_MEDIA_PATHS': (),
+    'STATIC_IMAGES_EXTENSIONS': ['jpg', 'png'],
 }
 
 MEDIA_URL = '/media/'  # or any prefix you choose
@@ -62,7 +65,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(",")
 CORS_ALLOW_HEADERS = ['*']
 CORS_ORIGIN_ALLOW_ALL  = True
 
@@ -105,12 +108,12 @@ WSGI_APPLICATION = 'taskManagerApi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'heroku_619f45dc24cffce',
-        'HOST': 'us-cdbr-east-02.cleardb.com',
-        'PORT': '3306',
-        'USER': 'bc25530034641a',
-        'PASSWORD': '779e4a8c',
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'), 
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
     }
 }
 

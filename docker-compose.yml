@@ -3,6 +3,8 @@ version: "3.9"
 services:
   db:
     image: mysql:5.7
+    volumes:
+      - ./mysql:/var/lib/mysql
     restart: always
     ports:
       - '3306:3306'
@@ -12,10 +14,22 @@ services:
        MYSQL_ROOT_PASSWORD: 'password'
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
+      - static:/code/static
       - .:/code
+    depends_on:
+    - db
+  nginx:
+    image: nginx:1.13
     ports:
-      - "8000:8000"
+      - 8000:80 
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static:/code/static
     depends_on:
       - db
+
+volumes:
+  .:
+  mysql:
+  static:
